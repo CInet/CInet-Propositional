@@ -71,6 +71,20 @@ sub new {
     bless { cube => $cube, solver => $solver, relify => $relify }, $class
 }
 
+=head3 axioms
+
+    my $axioms = $prop->axioms;
+
+Returns an arrayref of arrayrefs which represents a conjunction
+of clauses. Each clause, an inner arrayref, contains positive and
+negative integers, each representing a literal in the clause.
+
+=cut
+
+sub axioms {
+    shift->{solver}->clauses
+}
+
 =head2 Implementation of CInet::Seq
 
 =head3 inhabited
