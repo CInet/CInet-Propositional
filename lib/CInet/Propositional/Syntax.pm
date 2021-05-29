@@ -80,7 +80,7 @@ sub import {
 
             return CInet::Propositional::Type->new(__SUB__) if not @_;
 
-            my $cube = CUBE(@_);
+            my $cube = Cube(@_);
             my $k = <{ length($arg->{I}) }>;
             my @An = $cube->squares;
             my @Fn = $cube->faces($k);
