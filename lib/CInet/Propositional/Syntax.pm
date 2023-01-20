@@ -112,7 +112,7 @@ sub import {
             # the :sep key in the objects returned by Keyword::Declare.
             # Report this as a bug or feature request? This is also not
             # covered by the test suite.
-            CIStmt+ @ante :sep(/\s*[&∧]\s*/), /⇒ | =>/x,
+            CIStmt* @ante :sep(/\s*[&∧]\s*/), /⇒ | =>/x?,
             CIStmt+ @cons :sep(/\s*[&∧|∨]\s*/)
     ) {{{
         push @axioms, <{ ci_imply \@ante => \@cons }>
