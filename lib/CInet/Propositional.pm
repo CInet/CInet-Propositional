@@ -11,7 +11,7 @@ CInet::Propositional - CI inference axioms and SAT solvers
 
 =head2 VERSION
 
-This document describes CInet::Base v0.0.1.
+This document describes CInet::Propositional v0.0.1.
 
 =cut
 

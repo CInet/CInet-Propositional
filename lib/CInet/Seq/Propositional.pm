@@ -17,6 +17,7 @@ use Modern::Perl 2018;
 use Carp;
 
 use CInet::ManySAT;
+use CInet::ManySAT::Incremental;
 
 =head1 DESCRIPTION
 
@@ -104,6 +105,57 @@ sub inhabited {
     my ($cube, $solver, $relify) = shift->@{'cube', 'solver', 'relify'};
     local $_ = $solver->model(@_);
     not(defined) ? undef : $relify->($_, $cube)
+}
+
+=head3 consistent
+
+    my $model = $prop->consistent($partial);
+
+Return an extension of the partially defined argument or C<undef> if
+the partial assignment is inconsistent. The argument does not have to
+be partially defined. If it is totally defined, then this checks only
+the consistency and returns a copy of the given model or C<undef>.
+
+TODO: This currently makes assumptions about an C<$unrelify>
+And really, C<$relify> and C<$unrelify> should be encapsulated
+into something and be called C<pack> and C<unpack>. Maybe it can
+be encapsulated into the Type object via mixins?
+
+=cut
+
+sub consistent {
+    my ($cube, $solver, $relify) = shift->@{'cube', 'solver', 'relify'};
+    my $A = shift;
+    my $assump = [];
+    if (defined $A) {
+        for my $ijK ($cube->squares) {
+            my $var = $cube->pack($ijK);
+            my $c = $A->[$var];
+            if ($c eq 0) {
+                push $assump->@*, $var;
+            }
+            elsif ($c eq 1) {
+                push $assump->@*, -$var;
+            }
+            # TODO: only do non-oriented for now
+        }
+    }
+    local $_ = $solver->model($assump);
+    not(defined) ? undef : $relify->($_, $cube);
+}
+
+=head3 incremental
+
+    my $incr = $prop->incremental;
+
+Return an instance of L<CInet::ManySAT::Incremental> loaded with the
+backing formula. Such a solver can only answer consistency queries
+but asking it lots of such queries is considerably faster.
+
+=cut
+
+sub incremental {
+    CInet::ManySAT::Incremental->new->read(shift->axioms)
 }
 
 =head3 count
