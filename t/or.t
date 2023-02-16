@@ -6,7 +6,6 @@ use CInet::Propositional;
 
 use Test::More;
 
-# Define a CInet::Propositional::Type object via axioms
 propositional orclause = cube(ijk|L) →
     (ij|L) | (ij|kL);
 

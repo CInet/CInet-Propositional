@@ -7,19 +7,19 @@ CInet::Propositional::Syntax - Beautiful propositionals
 =head1 SYNOPSIS
 
     # Define a CInet::Propositional::Type object via axioms
-    propositional SEMIGRAPHOIDS = cube(ijk|L) →
+    propositional Semigraphoids = cube(ijk|L) →
         (ij|L) ∧ (ik|jL) ⇒ (ik|L) ∧ (ij|kL);
 
     # Unicode is optional
-    propositional GAUSSOIDS = cube(ijk|L) ::
+    propositional Gaussoids = cube(ijk|L) ::
         (ij|L)  & (ik|jL) => (ik|L)  & (ij|kL),
         (ij|kL) & (ik|jL) => (ij|L)  & (ik|L),
         (ij|L)  & (ik|L)  => (ij|kL) & (ik|jL),
         (ij|L)  & (ij|kL) => (ik|L)  | (jk|L);
 
     # Can also refine an existing type
-    propositional MARKOVIANS = cube(ijk|L) →
-        GAUSSOIDS, (ij|L) ⇒ (ij|kL);
+    propositional Markovians = cube(ijk|L) →
+        Gaussoids, (ij|L) ⇒ (ij|kL);
 
 =cut
 
@@ -45,8 +45,9 @@ define L<CInet::Propositional::Type> objects efficiently and beautifully.
 sub pack_stmt {
     my $st = shift;
     '$cube->pack(['.
-        '['. join(', ', map { '$'.$_ } split //, $st->{ij}) .'],'.
-        '['. join(', ', map({ '$'.$_ } split //, $st->{V}), '@$'.$st->{K}) .']'.
+        '['. join(', ', map {  '$'.$_ } split //, $st->{ij}) .'],'.
+        '['. join(', ', map({  '$'.$_ } split //, $st->{V}),
+                        map({ '@$'.$_ } split //, $st->{K})) .']'.
     '])'
 }
 
@@ -68,8 +69,8 @@ sub ci_imply {
 
 sub import {
 
-    keytype FaceArg is /\( (?<I>  [a-z]*)     \| (?<K> [A-Z]) \)/x;
-    keytype CIStmt  is /\( (?<ij> [a-z][a-z]) \| (?<V> [a-z]*)(?<K> [A-Z]?) \)/x;
+    keytype FaceArg is /\( (?<I>  [a-z]*)     \| (?<K> [A-Z]+) \)/x;
+    keytype CIStmt  is /\( (?<ij> [a-z][a-z]) \| (?<V> [a-z]*)(?<K> [A-Z]*) \)/x;
 
     keyword propositional (
             Identifier $v, '=', 'cube',
@@ -77,11 +78,13 @@ sub import {
     ) :then(/[^,;]+/+ @stmts :sep(Comma), ';') {{{
         sub <{$v}> {
             use Algorithm::Combinatorics qw(permutations);
+            use List::MoreUtils qw(part);
 
             return CInet::Propositional::Type->new(__SUB__) if not @_;
 
             my $cube = Cube(@_);
             my $k = <{ length($arg->{I}) }>;
+            my $m = <{ length($arg->{K}) }>;
             my @An = $cube->squares;
             my @Fn = $cube->faces($k);
             my @axioms;
@@ -94,12 +97,37 @@ sub import {
             # these local variables to form new CI statements.
             for my $F (@Fn) {
                 my ($I, $L) = @$F;
+
+                # An m-ary counter with L digits implements partitions of an
+                # L-element set into exactly m (possibly empty!) blocks, by
+                # the inverse image of the index -> digit mapping.
+                my @LL;
+                my @C = map { 0 } @$L;
+                while (1) {
+                    push @LL, [ map { [ defined($_) ? $L->@[@$_] : () ] } part { $C[$_] } 0 .. $#C ];
+                    my $i = 0;
+                    while ($i < @$L) {
+                        if (++$C[$i] >= $m) {
+                            $C[$i++] = 0;
+                        }
+                        else {
+                            last;
+                        }
+                    }
+                    last if $i == @$L;
+                }
+
                 for my $J (permutations($I)) {
                     # Set local variables using names specified by $arg.
                     my ( <{ join(', ', map { '$'.$_ } split //, $arg->{I}) }> ) = @$J;
-                    my <{ '$'.$arg->{K} }> = $L;
-                    # Parse all the axioms with a separate keyword.
-                    <{ map { "_cube_push $_;\n" } @stmts }>
+                    # Loop over all decompositions of $L
+                    for (@LL) {
+                        my ( <{ join(', ', map { '$'.$_ } split //, $arg->{K}) }> ) = @$_;
+                        <{ join ' ', map { '$'.$_ . ' //= [];' } split //, $arg->{K} }>
+                        # Parse all the axioms with a separate keyword using
+                        # the now-defined local variables.
+                        <{ map { "_cube_push $_;\n" } @stmts }>
+                    }
                 }
             }
             CInet::Seq::Propositional->new($cube => \@axioms)
