@@ -144,6 +144,23 @@ sub consistent {
     not(defined) ? undef : $relify->($_, $cube);
 }
 
+=head3 solver
+
+    my $solver = $prop->solver($class);
+
+Return a SAT solver preloaded with the backing formula. The C<$class>
+argument specifies the class of solver to be returned. It must implement
+the C<CInet::ManySAT::Base> role. The default value for C<$class> is
+C<CInet::ManySAT>.
+
+=cut
+
+sub solver {
+    my ($self, $class) = @_;
+    $class //= 'CInet::ManySAT';
+    $class->new->read($self->axioms)
+}
+
 =head3 incremental
 
     my $incr = $prop->incremental;
@@ -155,7 +172,7 @@ but asking it lots of such queries is considerably faster.
 =cut
 
 sub incremental {
-    CInet::ManySAT::Incremental->new->read(shift->axioms)
+    shift->solver('CInet::ManySAT::Incremental')
 }
 
 =head3 count
