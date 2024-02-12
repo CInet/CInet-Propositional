@@ -11,14 +11,14 @@ CInet::Propositional - CI inference axioms and SAT solvers
 
 =head2 VERSION
 
-This document describes CInet::Propositional v0.9.1.
+This document describes CInet::Propositional v0.9.2.
 
 =cut
 
 # ABSTRACT: CI inference axioms and SAT solvers
 package CInet::Propositional;
 
-our $VERSION = "v0.9.1";
+our $VERSION = "v0.9.2";
 
 =head1 DESCRIPTION
 

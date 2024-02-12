@@ -89,6 +89,7 @@ sub import {
             my @An = $cube->squares;
             my @Fn = $cube->faces($k);
             my @axioms;
+            my %include;
             # Evaluate the axioms after '::' for every orientation of
             # every face of the requested dimension.
             #
@@ -131,6 +132,10 @@ sub import {
                     }
                 }
             }
+            # Push axioms of all included propositionals.
+            for (values %include) {
+                push @axioms, $_->($cube)->axioms->@*;
+            }
             CInet::Seq::Propositional->new($cube => \@axioms)
         }
     }}}
@@ -147,9 +152,12 @@ sub import {
         push @axioms, <{ ci_imply \@ante => \@cons }>
     }}}
 
-    # Include another propositional's axioms in the outer @axioms array.
+    # Remember to include another propositional's axioms in the outer
+    # @axioms array. Since we can just call <{ $p }>->($cube) once to
+    # get all its axioms, we should not do this in the nested loops in
+    # which _cube_push is called.
     keyword _cube_push (Identifier $p) {{{
-        push @axioms, <{ $p }> ->($cube)->axioms->@*
+        $include{"<{ $p }>"} = <{ $p }>;
     }}}
 
 }
