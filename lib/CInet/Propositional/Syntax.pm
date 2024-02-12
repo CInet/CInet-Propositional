@@ -77,6 +77,7 @@ sub import {
             FaceArg $arg, /→ | -> | ::/x
     ) :then(/[^,;]+/+ @stmts :sep(Comma), ';') {{{
         sub <{$v}> {
+            use feature qw(current_sub);
             use Algorithm::Combinatorics qw(permutations);
             use List::MoreUtils qw(part);
 
