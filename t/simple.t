@@ -6,6 +6,8 @@ use CInet::Propositional;
 
 use Test::More;
 
+no warnings 'redefine';
+
 # Define a CInet::Propositional::Type object via axioms
 propositional Semigraphoids = cube(ijk|L) →
     (ij|L) ∧ (ik|jL) ⇒ (ik|L) ∧ (ij|kL);

@@ -6,9 +6,6 @@ use CInet::Propositional;
 
 use Test::More;
 
-propositional Semigraphoids = cube(ijk|L) →
-    (ij|L) ∧ (ik|jL) ⇒ (ij|kL) ∧ (ik|L);
-
 propositional Somethings = cube(ijl|KL) →
     Semigraphoids,
     (ij|K) | (il|jKL);

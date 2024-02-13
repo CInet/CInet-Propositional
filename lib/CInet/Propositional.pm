@@ -47,9 +47,10 @@ use Modern::Perl 2018;
 use Import::Into;
 
 sub import {
-    CInet::Propositional::Type   -> import::into(1);
-    CInet::Seq::Propositional    -> import::into(1);
-    CInet::Propositional::Syntax -> import::into(1);
+    CInet::Propositional::Type     -> import::into(1);
+    CInet::Seq::Propositional      -> import::into(1);
+    CInet::Propositional::Syntax   -> import::into(1);
+    CInet::Propositional::Families -> import::into(1);
 }
 
 =head1 AUTHOR

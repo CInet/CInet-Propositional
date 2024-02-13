@@ -109,13 +109,14 @@ sub import {
     keytype CIStmt  is /\( (?<ij> [a-z][a-z]) \| (?<V> [a-z]*)(?<K> [A-Z]*) \)/x;
 
     keyword propositional (
-            Identifier $v, '=', 'cube',
+            Identifier $v, Attributes? $attr, '=', 'cube',
             FaceArg $arg, /→ | -> | ::/x
     ) :then(/[^,;]+/+ @stmts :sep(Comma), ';') {{{
-        sub <{$v}> {
+        sub <{$v}> <{$attr}> {
             use feature qw(current_sub);
             use Algorithm::Combinatorics qw(permutations);
             use List::MoreUtils qw(part);
+            use CInet::Base;
 
             return CInet::Propositional::Type->new(__SUB__) if not @_;
 
