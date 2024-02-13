@@ -97,6 +97,21 @@ sub axioms {
     shift->{solver}->clauses
 }
 
+=head3 contains
+
+    my $bool = $prop->contains($A);
+
+Check if the given C<CInet::Relation> C<$A> is in the sequence.
+This does not enumerate the sequence but rather uses its defining
+axioms.
+
+=cut
+
+sub contains {
+    my ($self, $A) = @_;
+    defined $self->consistent($A)
+}
+
 =head2 Implementation of CInet::Seq
 
 =head3 inhabited
@@ -141,7 +156,7 @@ sub consistent {
     if (defined $A) {
         for my $ijK ($cube->squares) {
             my $var = $cube->pack($ijK);
-            my $c = $A->[$var];
+            my $c = $A->cival($ijK);
             if ($c eq 0) {
                 push $assump->@*, $var;
             }
