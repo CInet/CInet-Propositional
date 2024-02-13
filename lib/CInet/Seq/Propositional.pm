@@ -2,15 +2,26 @@
 
 =head1 NAME
 
-CInet::Seq::Propositional - Axiomatically defined relations
+CInet::Seq::Propositional - Sequence of axiomatically defined relations
 
 =head1 SYNOPSIS
 
-    ...
+    # Define a propositional type object.
+    propositional Semigraphoids = cube (ijk|L) -> (ij|L) & (ik|jL) => (ij|kL) & (ik|L);
+    # Get a CInet::Seq::Propositional for its elements on a 4-element ground set:
+    my $seq = Semigraphoids(4);
+
+    # Counting is efficient and non-exhaustive using #SAT solver.
+    say $seq->count;
+    # Enumeration works via AllSAT solver.
+    say for $seq->list;
+
+    # Get a CInet::ManySAT solver with the axioms preloaded.
+    my $solver = $seq->solver;
 
 =cut
 
-# ABSTRACT: Axiomatically defined relations
+# ABSTRACT: Sequence of axiomatically defined relations
 package CInet::Seq::Propositional;
 
 use Modern::Perl 2018;

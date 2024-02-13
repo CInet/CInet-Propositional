@@ -35,6 +35,42 @@ use Keyword::Declare;
 This module implements keywords via L<Keyword::Declare> that allow to
 define L<CInet::Propositional::Type> objects efficiently and beautifully.
 
+A propositional is a callable object which represents a type of CI relations
+indexed by L<CInet::Cube> instances and defined via axioms.
+
+=over
+
+=item *
+
+The declaration starts with the C<propositional> keyword, followed by an
+identifier. This identifier will be inserted into the surrounding lexical
+scope as a L<CInet::Propositional::Type> object.
+
+=item *
+
+Then a declaration of a C<cube(ijk...|Z)> is made. This essentially
+fixes the dimension C<k> in a forbidden minor characterization of the
+family using C<k> minors. The C<ijk...> part lists the names of singleton
+variables and C<Z> is an arbitrary subset not containing any of those
+singletons.
+
+=item *
+
+Then follow the clauses of a CNF describing the CI relations admitted
+into the family. The syntax is close to the mathematical notation for
+CI inference formulas. The singleton variables declared in the C<cube>
+statement can be used on the left and right side of a CI statement,
+e.g., C<(ij|Z)> and C<(ij|kZ)> are both valid. The conditioning set
+C<Z> must always appear on the right side. Unicode for logical
+connectives is supported.
+
+=item *
+
+Instead of CNF formulas, other L<CInet::Propositional::Type> objects
+may be listed which results in their axioms being included.
+
+=back
+
 =cut
 
 # Turn a CIStmt object into an invocation of $cube->pack.

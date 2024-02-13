@@ -22,7 +22,24 @@ our $VERSION = "v0.9.2";
 
 =head1 DESCRIPTION
 
-TODO
+This module imports all modules in its distribution, most notably
+L<CInet::Propositional::Syntax> which defines the C<propositional>
+keyword. Using this keyword, families of CI relations can be
+defined axiomatically using a syntax very close to mathematics:
+
+    propositional Semigraphoids = cube (ijk|L) -> (ij|L) & (ik|jL) => (ij|kL) & (ik|L);
+
+This results in a L<CInet::Propositional::Type> object which can
+be instantiated by giving a L<CInet::Cube> object. This results
+in a L<CInet::Seq::Propositional> sequence representing all
+L<CInet::Relation>s compatible with the axioms:
+
+    say Semigraphoids(4)->count #= 26424
+
+There are indeed 26424 semigraphoids on a 4-element ground set.
+This number is obtained in the blink of an eye because the set
+is defined axiomatically and by being a L<CInet::Seq::Propositional>,
+a #SAT solver is used for counting.
 
 =cut
 
