@@ -28,6 +28,7 @@ seladhesivity testing or axiom derivation).
 # ABSTRACT: Type object for CInet::Seq::Propositional
 package CInet::Propositional::Type;
 
+use Modern::Perl 2018;
 use CInet::Base;
 
 # TODO: We should maybe cache formulas.
@@ -51,7 +52,54 @@ Test if a relation C<$A> satisfies the axioms of C<$type>.
 
 sub test {
     my ($self, $A) = @_;
-    $self->(Cube($A))->contains($A)
+    defined $self->(Cube($A))->consistent($A)
+}
+
+=head3 imply
+
+    my $bool = $type->imply($A => @C);
+
+Check if the assumptions in the relation C<$A> together with the axioms
+of C<$type> imply the validity of the I<disjunction> of CI statements in
+C<@C>.
+
+Note that independences I<and> dependences in C<$A> contribute to the
+assumptions! If for example C<$A> contains a dependence which implied
+as an independence by other independences of C<$A>, then the assumptions
+are contradictory and every conclusion is implied. If you only want to
+assume the independences in C<$A>, use L<weakly_imply|/"weakly_imply>.
+
+=cut
+
+sub imply {
+    my ($self, $A, @C) = @_;
+    my $B = $A->clone;
+    for (@C) {
+        return 1 if $B->cival($_) eq 0; # trivial
+        $B->cival($_) = 1;
+    }
+    not $self->test($B)
+}
+
+=head3 weakly_imply
+
+    my $bool = $type->weakly_imply($L => @C);
+
+Check if the independence assumptions in the relation C<$L> together with
+the axioms of C<$type> imply the validity of the I<disjunction> of CI
+statements in C<@C>.
+
+=cut
+
+sub weakly_imply {
+    my ($self, $A, @C) = @_;
+    my $B = CInet::Relation->new(Cube($A));
+    $B->cival($_) = 0 for $A->independences;
+    for (@C) {
+        return 1 if $B->cival($_) eq 0; # trivial
+        $B->cival($_) = 1;
+    }
+    not $self->test($B)
 }
 
 =head1 AUTHOR
