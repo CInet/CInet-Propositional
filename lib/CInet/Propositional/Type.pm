@@ -75,6 +75,8 @@ sub imply {
     my ($self, $A, @C) = @_;
     my $B = $A->clone;
     for (@C) {
+        die 'disjunctions with global CI statements are not supported'
+            if @C > 1 and @$_ == 3;
         return 1 if $B->cival($_) eq 0; # trivial
         $B->cival($_) = 1;
     }
