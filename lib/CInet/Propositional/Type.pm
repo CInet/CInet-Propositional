@@ -104,6 +104,20 @@ sub weakly_imply {
     not $self->test($B)
 }
 
+=head3 description
+
+    my $str = $type->description;
+
+Returns a human-readable description of the object.
+
+=cut
+
+sub description {
+    use Sub::Identify qw(sub_name);
+    my $sub = shift;
+    'Propositional type ' . sub_name($sub)
+}
+
 =head1 AUTHOR
 
 Tobias Boege <tobs@taboege.de>

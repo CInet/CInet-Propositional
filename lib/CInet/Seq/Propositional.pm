@@ -112,27 +112,6 @@ sub contains {
     defined $self->consistent($A)
 }
 
-=head2 Implementation of CInet::Seq
-
-=head3 inhabited
-
-    my $model = $prop->inhabited;
-
-Returns a model if C<$prop> is satisfiable and otherwise C<undef>.
-Unlike the vanilla L<CInet::Seq#inhabited> method this has no
-side effects on the available elements in C<$prop>, because a
-separate SAT solver is started on the backing formula.
-
-Accepts the same arguments as L<CInet::ManySAT#model>.
-
-=cut
-
-sub inhabited {
-    my ($cube, $solver, $relify) = shift->@{'cube', 'solver', 'relify'};
-    local $_ = $solver->model(@_);
-    not(defined) ? undef : $relify->($_, $cube)
-}
-
 =head3 consistent
 
     my $model = $prop->consistent($partial);
@@ -199,6 +178,41 @@ but asking it lots of such queries is considerably faster.
 
 sub incremental {
     shift->solver('CInet::ManySAT::Incremental')
+}
+
+=head3 description
+
+    my $str = $prop->description;
+
+Returns a human-readable description of the object.
+
+=cut
+
+sub description {
+    use Scalar::Util qw(blessed);
+    my $self = shift;
+    'Axiomatically defined sequence of type ' . blessed($self)
+}
+
+=head2 Implementation of CInet::Seq
+
+=head3 inhabited
+
+    my $model = $prop->inhabited;
+
+Returns a model if C<$prop> is satisfiable and otherwise C<undef>.
+Unlike the vanilla L<CInet::Seq#inhabited> method this has no
+side effects on the available elements in C<$prop>, because a
+separate SAT solver is started on the backing formula.
+
+Accepts the same arguments as L<CInet::ManySAT#model>.
+
+=cut
+
+sub inhabited {
+    my ($cube, $solver, $relify) = shift->@{'cube', 'solver', 'relify'};
+    local $_ = $solver->model(@_);
+    not(defined) ? undef : $relify->($_, $cube)
 }
 
 =head3 count
