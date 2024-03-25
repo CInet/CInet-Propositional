@@ -117,6 +117,7 @@ sub import {
             use Algorithm::Combinatorics qw(permutations);
             use List::MoreUtils qw(part);
             use CInet::Base;
+            use CInet::Propositional::Type;
 
             return CInet::Propositional::Type->new(__SUB__) if not @_;
 
