@@ -118,6 +118,7 @@ sub import {
             use List::MoreUtils qw(part);
             use CInet::Base;
             use CInet::Propositional::Type;
+            use CInet::Seq::Propositional;
 
             return CInet::Propositional::Type->new(__SUB__) if not @_;
 
