@@ -72,6 +72,11 @@ propositional MarkovNetworks :Export(:DEFAULT) = cube(ijk|L) ->
     (ij|L) => (ij|kL),
     (ij|L) => (ik|L) | (jk|L);
 
+=head1 TODO
+
+This file parses slowly because of the use of the C<propositional> keyword.
+It would be great to cache the parsed version on disk and load it instead.
+
 =head1 AUTHOR
 
 Tobias Boege <tobs@taboege.de>

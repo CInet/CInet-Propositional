@@ -104,6 +104,39 @@ sub weakly_imply {
     not $self->test($B)
 }
 
+=head3 completion
+
+    my $Ac = $type->completion($A);
+
+Compute the completion of C<$A> under the axioms of C<$type>. This adds all
+CI statements which are true in every C<$type>-extension of C<$A>.
+
+=cut
+
+sub completion {
+    my ($self, $A) = @_;
+
+    my $cube = Cube($A);
+    my $solver = $self->($cube)->incremental;
+    my @to_test;
+    for my $ijK ($cube->squares) {
+        if ($A->cival($ijK) eq 0) {
+            $solver->add([ $cube->pack($ijK) ]);
+        }
+        else {
+            push @to_test, $ijK;
+        }
+    }
+
+    my $B = $A->clone;
+    for my $ijK (@to_test) {
+        # If the negation is inconsistent, $ijK is implied.
+        $B->cival($ijK) = 0 unless
+            defined $solver->model([ -$cube->pack($ijK) ]);
+    }
+    $B
+}
+
 =head3 description
 
     my $str = $type->description;
